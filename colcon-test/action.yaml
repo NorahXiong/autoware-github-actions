@@ -90,13 +90,16 @@ runs:
           --mixin coverage-pytest \
           --packages-above ${{ inputs.target-packages }} \
           --executor sequential \
-          --return-code-on-test-failure
+          --return-code-on-test-failure \
+          --event-handlers console_direct+
 
+        echo "[Debug] lcov-result:"
         colcon lcov-result \
           --verbose \
           --filter "*/test/*" \
           --packages-above ${{ inputs.target-packages }} || true
 
+        echo "[Debug] coveragepy-result:"
         colcon coveragepy-result \
           --verbose \
           --packages-above ${{ inputs.target-packages }} || true
@@ -129,4 +132,7 @@ runs:
         # Join coverage file names
         coverage_files_str="$(IFS=,; echo "${coverage_files[*]}")"
         echo "coverage-reports=$coverage_files_str" >> $GITHUB_OUTPUT
+        echo $GITHUB_OUTPUT
+        echo $coverage_files_str
+        cat $coverage_files_str
       shell: bash
