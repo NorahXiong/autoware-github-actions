@@ -184,6 +184,10 @@ runs:
           skip_packages_arg="--packages-skip ${{ inputs.packages-skip }}"
         fi
 
+        # Disable network access for xmllint to prevent timeout issues
+        export XMLLINT_NONET=1
+        export XML_CATALOG_FILES=
+
         colcon lcov-result --zero-counters \
           --verbose \
           --packages-above ${{ inputs.target-packages }} \
@@ -199,6 +203,7 @@ runs:
           --packages-above ${{ inputs.target-packages }} \
           $skip_packages_arg \
           --executor sequential \
+          --pytest-args -o timeout=300 \
           --return-code-on-test-failure
 
         colcon lcov-result \
